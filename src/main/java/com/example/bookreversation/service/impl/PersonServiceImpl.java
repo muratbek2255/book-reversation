@@ -30,6 +30,10 @@ public class PersonServiceImpl implements PersonService {
     public ResponseEntity<Person> getById(int id) {
         Person person = (Person) personRepository.getById(id);
 
+        if(person.getBooks().isEmpty()) {
+            return null;
+        }
+
         return ResponseEntity.status(200).body(person);
     }
 
