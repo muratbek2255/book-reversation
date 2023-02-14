@@ -8,6 +8,7 @@ import com.example.bookreversation.service.PersonService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 
@@ -33,6 +34,14 @@ public class PersonServiceImpl implements PersonService {
         if(person.getBooks().isEmpty()) {
             return null;
         }
+        person.getBooks().forEach(
+                book -> {
+                    long Milli = Math.abs(book.getTakenAt().getTime() - new Date().getTime());
+                    if(Milli > 864000000) {
+                        book.setExpired(true);
+                    }
+                }
+        );
 
         return ResponseEntity.status(200).body(person);
     }
