@@ -41,10 +41,6 @@ public class Book {
     @Temporal(TemporalType.TIMESTAMP)
     private Date takenAt;
 
-    @Column(name = "given_at")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date givenAt;
-
     @Transient
     private boolean expired;
 }

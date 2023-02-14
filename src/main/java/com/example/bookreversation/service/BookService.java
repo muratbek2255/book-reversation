@@ -7,13 +7,13 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 
 public interface BookService {
-    public ResponseEntity<List<Book>> getAllBook();
+    public List<Book> getAllBook();
 
-    public ResponseEntity<String> getByIdBook(int id);
+    public String getByIdBook(int id);
 
-    public ResponseEntity<String> addBook(BookRequest bookRequest);
+    public String addBook(BookRequest bookRequest);
 
-    public ResponseEntity<String> updateBook(BookRequest bookRequest, int id);
+    public String updateBook(BookRequest bookRequest, int id);
 
-    public ResponseEntity<String> deleteBook(int id);
+    public String deleteBook(int id);
 }

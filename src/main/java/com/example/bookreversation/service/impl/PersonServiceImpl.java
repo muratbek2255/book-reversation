@@ -1,11 +1,12 @@
 package com.example.bookreversation.service.impl;
 
-import com.example.bookreversation.dto.requests.JoinRequest;
 import com.example.bookreversation.dto.requests.PersonRequest;
 import com.example.bookreversation.entity.Person;
+import com.example.bookreversation.events.CreatePersonEvents;
 import com.example.bookreversation.repository.PersonRepository;
 import com.example.bookreversation.service.PersonService;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -17,23 +18,25 @@ public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
 
-    public PersonServiceImpl(PersonRepository personRepository) {
+    private ApplicationEventPublisher eventPublisher;
+
+    @Autowired
+    public PersonServiceImpl(PersonRepository personRepository, ApplicationEventPublisher eventPublisher) {
         this.personRepository = personRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
-    public ResponseEntity<List<Person>> getAllBook() {
+    public List<Person> getAllBook() {
         List<Person> people = personRepository.findAll();
-        return ResponseEntity.status(200).body(people);
+        return people;
     }
 
     @Override
-    public ResponseEntity<Person> getById(int id) {
-        Person person = (Person) personRepository.getById(id);
+    public Person getById(int id) {
+        Person person = personRepository.getById(id);
 
-        if(person.getBooks().isEmpty()) {
-            return null;
-        }
+
         person.getBooks().forEach(
                 book -> {
                     long Milli = Math.abs(book.getTakenAt().getTime() - new Date().getTime());
@@ -43,11 +46,12 @@ public class PersonServiceImpl implements PersonService {
                 }
         );
 
-        return ResponseEntity.status(200).body(person);
+
+        return person;
     }
 
     @Override
-    public ResponseEntity<String> addPerson(PersonRequest personRequest) {
+    public String addPerson(PersonRequest personRequest) {
         Person person = new Person();
 
         person.setFirstName(personRequest.getFirstName());
@@ -56,11 +60,17 @@ public class PersonServiceImpl implements PersonService {
 
         personRepository.save(person);
 
-        return ResponseEntity.status(201).body("Person Created");
+        CreatePersonEvents createPersonEvents = new CreatePersonEvents(
+                this,
+                "Create User and Add in DB!!!"
+        );
+        eventPublisher.publishEvent(createPersonEvents);
+
+        return "Person Created";
     }
 
     @Override
-    public ResponseEntity<String> updatePerson(PersonRequest personRequest, int id) {
+    public String updatePerson(PersonRequest personRequest, int id) {
         Person person2 = new Person();
 
         Person person = personRepository.findById(id)
@@ -74,19 +84,14 @@ public class PersonServiceImpl implements PersonService {
                     person2.setId(personRequest.getId());
                     return personRepository.save(person2);
                 });
-
-        return ResponseEntity.status(201).body("Updated person!");
+        return "Updated person!";
     }
 
     @Override
-    public ResponseEntity<String> deletePerson(int id) {
+    public String  deletePerson(int id) {
         personRepository.deleteById(id);
 
-        return ResponseEntity.status(202).body("Delete person!");
+        return "Delete person!";
     }
 
-    public ResponseEntity<String> getBookByPersonId(int id) {
-        JoinRequest personId = (personRepository.getBookByPersonId(id));
-        return ResponseEntity.status(200).body(personId.toString());
-    }
 }

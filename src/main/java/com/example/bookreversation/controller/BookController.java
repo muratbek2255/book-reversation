@@ -22,27 +22,32 @@ public class BookController {
 
     @GetMapping
     public ResponseEntity<List<Book>> getAllBook() {
-        return bookService.getAllBook();
+        return ResponseEntity.status(200).body(bookService.getAllBook());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<String> getByIdBook(@PathVariable int id) {
-        return bookService.getByIdBook(id);
+        return ResponseEntity.status(200).body(bookService.getByIdBook(id));
     }
 
     @PostMapping
     public ResponseEntity<String> addBook(@RequestBody BookRequest bookRequest) {
-        return bookService.addBook(bookRequest);
+        return ResponseEntity.status(201).body(bookService.addBook(bookRequest));
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<String> updateBook(@RequestBody BookRequest bookRequest,
                                              @PathVariable int id) {
-        return bookService.updateBook(bookRequest, id);
+        return ResponseEntity.status(201).body(bookService.updateBook(bookRequest, id));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteBook(@PathVariable int id) {
-        return bookService.deleteBook(id);
+        return ResponseEntity.status(201).body(bookService.deleteBook(id));
+    }
+
+    @GetMapping("/get-book-by-person=-id/{id}")
+    public ResponseEntity<String> getBookByPersonId(@PathVariable int id) {
+        return ResponseEntity.status(202).body(bookService.getBookByPersonId(id));
     }
 }
